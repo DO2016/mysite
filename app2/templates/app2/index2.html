@@ -1,0 +1,21 @@
+{% extends "app2/base.html" %}
+
+{% block page %}
+
+<h4>{{request.full_host}}</h4>
+
+{% if latest_list %}
+    <!-- http://stackoverflow.com/questions/19024159/how-to-reverse-a-name-to-a-absolute-url-in-django-template -->
+    <div class="left">
+        <table border="1">
+        {% for some_item in latest_list %}
+                   <tr><td><a href="{{ url }}/{{ some_item.name }}/"> {{ forloop.counter }} {{ some_item }} </a></td></tr>
+        {% endfor %}
+        </table>
+    </div>
+
+{% else %}
+    <p>No items are available.</p>
+{% endif %}
+
+{% endblock %}

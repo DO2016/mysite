@@ -1,0 +1,17 @@
+{% extends "app1/base.html" %}
+
+{% block page %}
+
+<h4>{{request.full_host}}</h4>
+
+{% if latest_list %}
+    <ul>
+    {% for some_item in latest_list %}
+        <li><a href="{% url 'some_item.col1' %}/">{{ some_item.col1 }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No items are available.</p>
+{% endif %}
+
+{% endblock %}
