@@ -6,12 +6,27 @@
 
 {% if latest_list %}
     <!-- http://stackoverflow.com/questions/19024159/how-to-reverse-a-name-to-a-absolute-url-in-django-template -->
-    <div class="left">
+    <!--<div class="left">
         <table border="1">
         {% for some_item in latest_list %}
-                   <tr><td><a href="{{ url }}/{{ some_item.name }}/"> {{ forloop.counter }} {{ some_item }} </a></td></tr>
+                <tr><td><a href="{{ url }}/{{ some_item.name }}/"> {{ forloop.counter }} {{ some_item }} </a></td> </tr>
         {% endfor %}
         </table>
+    </div>-->
+
+    <div class="left">
+        <ul>
+            {% for some_item in item_list %}
+                <li> {{ some_item }}
+                    <ul>
+                        {% for review in some_item.reviews.all %}
+                             <li>{{ review }}</li>
+                        {% endfor %}
+                    </ul>
+                    Total price : {{ some_item.sum_ings_price }}
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 
 {% else %}

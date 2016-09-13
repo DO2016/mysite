@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import Count, Sum, Avg
 
 # Create your models here.
 
@@ -31,9 +32,9 @@ class ItemManager(models.Manager):
 
 
 
-
 class AbstractModel(models.Model):
-    created_date = models.DateTimeField(auto_now_add=True)
+    from django.utils import timezone
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
     updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     class Meta:
@@ -54,19 +55,40 @@ class Item(AbstractModel):
     currency = models.ForeignKey(Currency)   
     objects = ItemManager()
 
+    @property
+    def sum_ings_price(self):
+        return self.ings.aggregate(Sum('price'))['price__sum']
+
     def __unicode__(self):
-        return self.name + " of " + Item._meta.verbose_name
-
-    class Meta:
-        # A human-readable name for the object, singular:
-        verbose_name = "Item class derived from Abstract model" 
+        return self.name
 
 
-#################
-#      M2M      #
-#################
+class Review(AbstractModel):
+    content = models.TextField(null=True, blank=True, verbose_name='Review content')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='reviews')
+
+    def __unicode__(self):
+        return self.content
 
 
+# Create Ingredient(AbstractModel) with price with M2M on Item (one item can have a lot of ing and one ing can have a lot of items)
+class Ingredient(AbstractModel):
+    price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    name = models.CharField(max_length=400, verbose_name='Ingredient')
+    items = models.ManyToManyField(Item, related_name='ings', through='Composition')
+
+
+class Composition(models.Model):
+    ing = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    short_info = models.CharField(max_length=400)
+
+
+#########################
+#      Experiments      #
+#########################
+
+# Experiment 1
 class M2ModelBase1(models.Model):
     col1 = models.CharField(max_length=400, verbose_name='first name, last name')
 
@@ -76,3 +98,15 @@ class M2ModelBase2(models.Model):
     col3 = models.ManyToManyField(M2ModelBase1)
 
 
+# Experiment 2
+class DerivedItem(Item):
+    derived_col_1 = models.CharField(max_length=400, null=True, blank=True)
+    derived_col_2 = models.CharField(max_length=400, null=True, blank=True)
+    objects = ItemManager()
+
+    def __unicode__(self):
+        return self.name + " of " + DerivedItem._meta.verbose_name
+
+    class Meta:
+        # A human-readable name for the object, singular:
+        verbose_name = "DerivedItem cls"
