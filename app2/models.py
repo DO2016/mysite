@@ -81,7 +81,7 @@ class Ingredient(AbstractModel):
 class Composition(models.Model):
     ing = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    short_info = models.CharField(max_length=400)
+    short_info = models.CharField(max_length=400, null=True, blank=True)
 
 
 #########################

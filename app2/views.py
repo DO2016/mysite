@@ -7,7 +7,17 @@ from django.db.models import Count, Sum, Avg
 
 # Create your views here.
 
+def f(x,l=[]):
+    for i in range(x):
+        l.append(i*i)
+    print(l) 
+
+
 def index(request):
+   # f(2)
+    f(3,[3,2,1])
+    f(3)
+
     # Get published items
     latest_list = DerivedItem.objects.get_list_via_filter()
     item_list = Item.objects.select_related()
