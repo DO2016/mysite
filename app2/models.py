@@ -55,9 +55,10 @@ class Item(AbstractModel):
     currency = models.ForeignKey(Currency)   
     objects = ItemManager()
 
-    @property
-    def sum_ings_price(self):
-        return self.ings.aggregate(Sum('price'))['price__sum']
+    # WRONG: Produces A LOT OF QUERIES to DB
+    #@property
+    #def sum_ings_price(self):
+    #    return self.ings.aggregate(Sum('price'))['price__sum']
 
     def __unicode__(self):
         return self.name
@@ -69,7 +70,6 @@ class Review(AbstractModel):
 
     def __unicode__(self):
         return self.content
-
 
 # Create Ingredient(AbstractModel) with price with M2M on Item (one item can have a lot of ing and one ing can have a lot of items)
 class Ingredient(AbstractModel):
