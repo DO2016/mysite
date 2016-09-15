@@ -13,13 +13,13 @@ def f(x,l=[]):
     print(l) 
 
 def index(request):
-    f(2)
-    f(3,[3,2,1])
+    f(3)
+    # f(3,[3,2,1])
     f(3)
 
     # Get published items
     latest_list = DerivedItem.objects.get_list_via_filter()
-    item_list = Item.objects.select_related().annotate(sum_ings_price = models.Sum('ings__price'))
+    item_list = Item.objects.select_related().annotate(sum_ings_price = Sum('ings__price'))
     context = {'latest_list': latest_list, 'item_list' : item_list}
     return render(request, 'app2/index2.html', context)
     #return HttpResponse(reverse(request.resolver_match.namespace + ':index', current_app = request.resolver_match.namespace))
