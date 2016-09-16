@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.db.models import Count, Sum, Avg
+from django.forms import ModelForm
 
 # Create your models here.
 
@@ -25,7 +26,6 @@ class ItemManager(models.Manager):
             p.currency_id = row[8]
             result_list.append(p)
         return result_list
-
 
     def get_list_via_filter(self):
         return self.filter(is_published=True)
@@ -82,6 +82,27 @@ class Composition(models.Model):
     ing = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     short_info = models.CharField(max_length=400, null=True, blank=True)
+
+
+
+from django import forms
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=256)
+    password = forms.CharField(max_length=256)
+
+    def clean_password(self):
+        print '### clean_password ###'
+        data = self.cleaned_data['password']
+
+        if data != '123':
+            print 'Invalid password'
+            raise forms.ValidationError("Invalid password")
+        else:
+            print 'Password is Ok'
+        # Always return the cleaned data, whether you have changed it or not.
+        return data
+
 
 
 #########################

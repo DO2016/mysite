@@ -1,0 +1,13 @@
+{% extends "app2/base.html" %}
+
+{% block page %}
+
+    <form name="form_login" method="post" action="">{% csrf_token %}
+        <p>Login:<br>
+        <input type="text" name="username" size="60">
+        <p>Password:<br>
+        <input type="password" name="password" size="60">
+        <p><input type="submit"></p>
+    </form>
+
+{% endblock %}
