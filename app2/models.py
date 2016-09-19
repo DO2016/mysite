@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
 
+from django import forms
 from django.db import models
 from django.db.models import Count, Sum, Avg
-from django.forms import ModelForm
+from django.forms import ModelForm, PasswordInput
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User, UserManager
 
 # Create your models here.
 
@@ -84,24 +87,40 @@ class Composition(models.Model):
     short_info = models.CharField(max_length=400, null=True, blank=True)
 
 
-
-from django import forms
-
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=256)
-    password = forms.CharField(max_length=256)
+    username = forms.CharField(max_length=256, required=True)
+    password = forms.CharField(widget=PasswordInput(), max_length=256, required=True)
+    _pass_min_length = 3
+    current_user = None
+
+    class Meta:
+        fields = ('username', 'password')
 
     def clean_password(self):
-        print '### clean_password ###'
-        data = self.cleaned_data['password']
+        password = self.cleaned_data['password']
+        username = self.cleaned_data['username']
 
-        if data != '123':
-            print 'Invalid password'
-            raise forms.ValidationError("Invalid password")
+        if len(password) < LoginForm._pass_min_length:
+            print 'Password length validation failure.'
+            raise forms.ValidationError("Password length should be at least " + str(LoginForm._pass_min_length))
         else:
-            print 'Password is Ok'
+            user = authenticate(username=username, password=password)
+
+            if user is None:
+                print 'User authentication failed'
+                raise forms.ValidationError("User authentication failed")
+            else:
+                LoginForm.current_user = user
         # Always return the cleaned data, whether you have changed it or not.
-        return data
+        return password
+
+
+class CustomUser(User):
+    """User with app settings."""
+    timezone = models.CharField(max_length=50, default='Europe/Moscow')
+
+    # Use UserManager to get the create_user method, etc.
+    objects = UserManager()
 
 
 

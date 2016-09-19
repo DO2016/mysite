@@ -2,11 +2,28 @@
 
 {% block page %}
 
-    <form name="form_login" method="post" action="">{% csrf_token %}
-        <p>Login:<br>
-        <input type="text" name="username" size="60">
-        <p>Password:<br>
-        <input type="password" name="password" size="60">
+    <h4> {{ market_title }} </h4>
+
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    {{ error|escape }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ error|escape }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% with request.resolver_match.namespace|add:':login_view' as url_login_view %}
+    <form name="form_login" method="post" action={% url url_login_view %}> {% csrf_token %}
+    {% endwith %}
+
+        <table> {{ form.as_table }} </table>
         <p><input type="submit"></p>
     </form>
 
