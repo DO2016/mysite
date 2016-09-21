@@ -33,3 +33,13 @@
     right: 15px; /* Положение от правого края */
     left: 15px;
 }
+
+
+.special
+{
+    border: 2px double green;
+    width: 600px;
+    background: #f0f0f0; /* Цвет фона */
+    background-color: #ccc; /* Цвет фона */
+    padding: 10px; /* Поля вокруг текста */
+}

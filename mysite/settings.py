@@ -92,6 +92,12 @@ DATABASES = {
     }
 }
 
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST = 'mail.mera.ru'
+EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL='shubus.corporation@gmail.com'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -101,7 +107,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-CUSTOM_USER_MODEL = 'app2.models.CustomUser'
+CUSTOM_USER_MODEL = 'app2.models.NewCustomUser'
 
 
 AUTH_PASSWORD_VALIDATORS = [

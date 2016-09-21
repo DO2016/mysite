@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Count, Sum, Avg
 from django.forms import ModelForm, PasswordInput
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.models import User, AbstractUser, UserManager
 
 # Create your models here.
 
@@ -115,9 +115,34 @@ class LoginForm(forms.Form):
         return password
 
 
+class RegistrationForm(forms.Form):
+    first_name = forms.CharField(max_length=256, required=True)
+    last_name = forms.CharField(max_length=256, required=True)
+    password = forms.CharField(widget=PasswordInput(), max_length=256, required=True)
+    email = forms.CharField(max_length=256, required=True)
+    _pass_min_length = 3
+
+    class Meta:
+        fields = ('first_name', 'last_name', 'password', 'email')
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+
+        if len(password) < RegistrationForm._pass_min_length:
+            print 'Password length validation failure.'
+            raise forms.ValidationError("Password length should be at least " + str(LoginForm._pass_min_length))
+        return password
+
+
 class CustomUser(User):
-    """User with app settings."""
+    """
+    Users within the Django authentication system are represented by this
+    model.
+
+    Username, password and email are required. Other fields are optional.
+    """
     timezone = models.CharField(max_length=50, default='Europe/Moscow')
+    confirmation_code = models.CharField(max_length=128, null=True, blank=True)
 
     # Use UserManager to get the create_user method, etc.
     objects = UserManager()

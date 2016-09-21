@@ -1,0 +1,33 @@
+{% extends "app1/base.html" %}
+
+{% block page %}
+
+    <h4> {{ market_title }} </h4>
+
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    {{ error|escape }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ error|escape }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    {% if single_post %}
+        <p> {{ single_post.description }}</p>
+        <p> {{ single_post.editor.editor_fio }}</p>
+        <p> {{ single_post.authors }}</p>
+    {% endif %}
+
+    <form name="form_post" method="post" action=''> {% csrf_token %}
+        <table> {{ form.as_table }} </table>
+    </form>
+
+{% endblock %}

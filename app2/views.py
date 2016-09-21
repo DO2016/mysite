@@ -1,8 +1,12 @@
+import random
+import string
+import pytz, datetime
 from django.db import models
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, resolve
-from .models import Item, DerivedItem, Ingredient, LoginForm, CustomUser
+from .models import Item, DerivedItem, Ingredient, LoginForm, RegistrationForm, CustomUser
 from django.db.models import Count, Sum, Avg
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
@@ -10,6 +14,7 @@ from django.template import Context, Template
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, UserManager
+from django.conf import settings
 
 # Create your views here.
 
@@ -25,16 +30,9 @@ def index(request):
     # f(3)
 
     # https://docs.djangoproject.com/en/dev/topics/auth/default/
-    # from django.contrib.auth.models import User
     # user = User.objects.create_user('john', 'lennon@thebeatles.com', '123')
     # user.last_name = 'Lennon'
     # user.save()
-
-    # https://docs.djangoproject.com/en/dev/topics/auth/default/
-    from django.contrib.auth.models import User
-    user = CustomUser.objects.create_user('user', 'user@mail.com', '123')
-    user.last_name = 'Lastname'
-    user.save()
 
     # Get published items
     latest_list = DerivedItem.objects.get_list_via_filter()
@@ -58,15 +56,67 @@ def profile_view(request, pk=-1):
     return render(request, 'app2/profile.html', context)
 
 
-def login_view(request):
+def _create_new_user(username, last_name, email, password):
+    # https://docs.djangoproject.com/en/dev/topics/auth/default/
+    user = wCustomUser.objects.create_user(username, email, password)
+    user.last_name = last_name
+    user.is_active = False
+    user.confirmation_code = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(33))
+    user.save()
+    return user
+
+
+def _send_email(user):
+    content = "127.0.0.1:8080/app2/confirm/" + str(user.confirmation_code) + "/" + user.username
+    send_mail("Account confirmation", content, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+
+def registration_view(request):
     context = Context({})
-    # Add if for POST in view and use LoginForm for getting and validate POST parameters.
+
     if request.method == 'POST':
-        form = LoginForm(data=request.POST)
+        form = RegistrationForm(data=request.POST)
         
         if form.is_valid():
-            login(request, LoginForm.current_user)
-            return redirect(reverse(request.resolver_match.namespace + ':index', current_app = request.resolver_match.namespace))
+            user = _create_new_user(form.cleaned_data['first_name'] , form.cleaned_data['last_name'], form.cleaned_data['email'], form.cleaned_data['password'])
+            _send_email(user)
+            context = Context({ 'market_title' : 'Registration success!', 'reg_complete_msg' : 'Look your email for conformation letter!',  'form' : RegistrationForm })
+            return render(request, 'app2/registration.html', context)
+        else:
+            print form.errors.as_data()
+            context = Context({ 'form' : form })
+            return render(request, 'app2/registration.html', context)
+
+    elif request.method == 'GET':
+        context = Context({ 'market_title' : 'New account registration page', 'form' : RegistrationForm })
+    return render(request, 'app2/registration.html', context)
+
+
+
+def confirm_view(request, confirmation_code, username):
+    user = CustomUser.objects.get(username=username)
+    tz = pytz.timezone(user.timezone)
+
+    if user.confirmation_code == confirmation_code and user.date_joined > (datetime.datetime.now(tz) - datetime.timedelta(days=1)):
+        user.is_active = True
+        user.save()
+        #user.backend='django.contrib.auth.backends.ModelBackend' 
+    return redirect(reverse(request.resolver_match.namespace + ':login_view', current_app = request.resolver_match.namespace))
+
+
+def login_view(request):
+    context = Context({})
+
+    if request.method == 'POST':
+        form = LoginForm(data=request.POST)
+
+        if form.is_valid():
+            if LoginForm.current_user.is_active:
+                login(request, LoginForm.current_user)
+                return redirect(reverse(request.resolver_match.namespace + ':index', current_app = request.resolver_match.namespace))
+            else:
+                context = Context({ 'market_title' : 'Your account is not confirmed yet!', 'reg_complete_msg' : 'Look your email for conformation letter!', 'form' : RegistrationForm })
+                return render(request, 'app2/registration.html', context)
         else:
             print form.errors.as_data()
             context = Context({ 'form' : form })

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import ModelTable
+from .models import ModelTable, Post, PostForm, BookForm
 from django.core.urlresolvers import reverse, resolve
 
 
@@ -40,4 +40,10 @@ def article_detail(request, **kwargs):
 
 def month_archive(request, year, month):
     return HttpResponse("Your choice: " + request.path + "  " + " ".join([year, month]))
+
+
+def post_view(request):
+    context = { 'form': BookForm() }
+    return render(request, 'app1/post.html', context)
+
 	
