@@ -58,7 +58,7 @@ def profile_view(request, pk=-1):
 
 def _create_new_user(username, last_name, email, password):
     # https://docs.djangoproject.com/en/dev/topics/auth/default/
-    user = wCustomUser.objects.create_user(username, email, password)
+    user = CustomUser.objects.create_user(username, email, password)
     user.last_name = last_name
     user.is_active = False
     user.confirmation_code = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(33))
@@ -106,20 +106,19 @@ def confirm_view(request, confirmation_code, username):
 
 def login_view(request):
     context = Context({})
-
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
 
         if form.is_valid():
-            if LoginForm.current_user.is_active:
-                login(request, LoginForm.current_user)
+            if form.current_user.is_active:
+                login(request, form.current_user)
                 return redirect(reverse(request.resolver_match.namespace + ':index', current_app = request.resolver_match.namespace))
             else:
                 context = Context({ 'market_title' : 'Your account is not confirmed yet!', 'reg_complete_msg' : 'Look your email for conformation letter!', 'form' : RegistrationForm })
                 return render(request, 'app2/registration.html', context)
         else:
             print form.errors.as_data()
-            context = Context({ 'form' : form })
+            context = Context({ 'form' : form, 'market_title' : 'Failed: ' + LoginForm.current_password })
             return render(request, 'app2/login.html', context)
 
     elif request.method == 'GET':
@@ -129,5 +128,4 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    LoginForm.current_user = None
     return redirect(reverse(request.resolver_match.namespace + ':login_view', current_app = request.resolver_match.namespace))
