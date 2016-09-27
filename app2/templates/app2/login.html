@@ -19,10 +19,7 @@
         {% endfor %}
     {% endif %}
 
-    {% with request.resolver_match.namespace|add:':login_view' as url_login_view %}
-    <form name="form_login" method="post" action={% url url_login_view %}> {% csrf_token %}
-    {% endwith %}
-
+    <form name="form_login" method="post" action=''> {% csrf_token %}
         <table> {{ form.as_table }} </table>
         <p><input type="submit"></p>
     </form>

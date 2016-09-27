@@ -29,6 +29,9 @@ def index_table(request):
 #    return HttpResponse("Hello, world. You're at the app1 index.")
 
 def article_detail(request, **kwargs):
+    #print **kwargs
+    #print *kwargs
+    print kwargs
     year = kwargs.get('year', -1)
     month = kwargs.get('month', -1)
     day = kwargs.get('day', -1)
@@ -43,7 +46,9 @@ def month_archive(request, year, month):
 
 
 def post_view(request):
-    context = { 'form': BookForm() }
+
+    myform = BookForm()
+    context = { 'form': myform }
     return render(request, 'app1/post.html', context)
 
 	

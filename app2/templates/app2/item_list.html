@@ -1,0 +1,26 @@
+{% extends "app1/base.html" %}
+
+{% block page %}
+
+{% if latest_list %}
+    <ul>
+    {% for some_item in latest_list %}
+
+        {% with request.resolver_match.namespace|add:':detail_template' as path %}
+            {% url path  as resolved_url %}
+            {% with some_item.pk|stringformat:"s" as pk_str %}
+                {% with resolved_url|add:pk_str as url_ref %}
+
+                    <li><a href="{{ url_ref }}">{{ some_item.name }}</a></li>
+
+                {% endwith %}
+            {% endwith %}
+        {% endwith %}
+
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No items are available.</p>
+{% endif %}
+
+{% endblock %}

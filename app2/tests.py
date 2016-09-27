@@ -1,14 +1,15 @@
 from django.test import TestCase
 
 # Create your tests here.
+import json
 import random
 import string
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import TestCase, RequestFactory
 from django.test import Client
-from .models import CustomUser
-import json
-
+from django.shortcuts import redirect
+from .models import CustomUser, Item, Currency
+from django.test import TestCase, RequestFactory
+from django.core.urlresolvers import reverse, resolve
+from django.contrib.auth.models import AnonymousUser, User
 
 #from .views import registration_view
 
@@ -43,31 +44,44 @@ class SimpleTest(TestCase):
         self.assertTrue(user is not None and user.is_active)
 
 
-
     def test_b_profile(self):
         c = Client()
         user = User.objects.get(username=self.user.username)
-        response = c.post('http://127.0.0.1:8080/app2/profile/{0}/'.format(str(user.id)), {})
+        response = c.get('http://127.0.0.1:8080/app2/profile/{0}/'.format(str(user.id)), {})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(user.username in response.content)
 
-
-     
+  
     def test_c_login(self):
         c = Client()
         url = 'http://127.0.0.1:8080/app2/confirm/' + self.user.confirmation_code + '/' + self.user.username
         response = c.get(url)
         self.assertEqual(response.status_code, 302)
-
         response = c.post('http://127.0.0.1:8080/app2/login', { 'username': self.user.username, 'password' : self.plain_password, })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response['Location'].endswith('/app2/'))
 
 
-
     def test_d_logout(self):
         c = Client()
-        response = c.post('http://127.0.0.1:8080/app2/logout', {})
+        response = c.get('http://127.0.0.1:8080/app2/logout', {})
         self.assertEqual(response.status_code, 302)
-        self.assertTrue('/app2/login' in response['Location'])
+        self.assertTrue(response['Location'].endswith, '/app2/login')
+
+
+    def test_e_itemlist(self):
+        c = Client()
+        response = c.get('http://127.0.0.1:8080/app2/items/', {})
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_f_details(self):
+        c = Client()
+        iname = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
+        currency = Currency.objects.create(name='test_currency')
+
+        item = Item.objects.create(name=iname, content='test', currency=Currency.objects.get(pk=currency.pk))
+        url = 'http://127.0.0.1:8080/app2/details/' + str(item.pk)
+        response = c.get(url, {})
+        self.assertEqual(response.status_code, 200)
 

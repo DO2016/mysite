@@ -43,3 +43,13 @@
     background-color: #ccc; /* Цвет фона */
     padding: 10px; /* Поля вокруг текста */
 }
+
+
+.special2
+{
+    border: 2px double red;
+    width: 600px;
+    background: #f0f0f0; /* Цвет фона */
+    background-color: #ccc; /* Цвет фона */
+    padding: 10px; /* Поля вокруг текста */
+}
