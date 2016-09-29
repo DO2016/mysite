@@ -1,8 +1,11 @@
 {% extends "app2/base.html" %}
 
 {% block page %}
-
-    <h4> {{ market_title }} </h4>
+    <h4> {% if market_title %}
+    {{ market_title }} 
+    {% else  %}
+    Welcome!
+    {% endif %} </h4>
 
     {% if form.errors %}
         {% for field in form %}
@@ -17,6 +20,10 @@
                 {{ error|escape }}
             </div>
         {% endfor %}
+    {% endif %}
+
+    {% if log_msg %}
+        {{ log_msg }}
     {% endif %}
 
     <form name="form_login" method="post" action=''> {% csrf_token %}

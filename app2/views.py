@@ -1,133 +1,191 @@
+import uuid
 import random
 import string
-import pytz, datetime
+import datetime
+from dateutil import tz
 from django.db import models
 from django.views import View
 from django.conf import settings
+from django.utils import timezone
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.db.models import Count, Sum, Avg
+from django.views.generic import TemplateView
 from django.template import Context, Template
+from django.http import HttpResponseBadRequest
 from django.views.generic.list import ListView
+from .forms import RegistrationForm, LoginForm
+from django.views.generic.edit import FormView
+from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.contrib.auth import authenticate, login
-from django.core.urlresolvers import reverse, resolve
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Item, DerivedItem, Ingredient, LoginForm, RegistrationForm, CustomUser
+from .models import Item, DerivedItem, Ingredient, CustomUser
+from django.core.urlresolvers import reverse, reverse_lazy, resolve
+
+
 
 # Create your views here.
 
-#class MyView(View):
-#    def get(self, request):
-#        # <view logic>
-#        return HttpResponse('result')
+class IndexView(TemplateView):
+    template_name = "app2/index2.html"
 
-
-class IndexView(View):
-    #@login_required(login_url='login.html')
-    def get(self, request):
-        # Get published items
-        latest_list = DerivedItem.objects.get_list_via_filter()
+    def get_context_data(self, *args, **kwargs):
+        context = super(IndexView, self).get_context_data(*args, **kwargs)
         item_list = Item.objects.select_related().annotate(sum_ings_price = Sum('ings__price'))
-        context = {'latest_list': latest_list, 'item_list' : item_list}
-        return render(request, 'app2/index2.html', context)
+        context['item_list'] = item_list
+        return context
 
 
-class ProfileView(View):
-    def get(self, request, pk=-1):
-        if (pk > -1):
-            user_pk_int = int(pk)
-        else:
-            user_pk_int = int(request.GET.get('pk', '0'))
-            pk = user_pk_int
-        try:
-            user = User.objects.get(id=user_pk_int)
-        except:
-            context = Context({ 'user_pk' : pk, 'user_name' : 'Not found', 'user_email' : 'Not found' })      
-        else:
-            context = Context({ 'user_pk' : pk, 'user_name' : user.username, 'user_email' : user.email })
-        return render(request, 'app2/profile.html', context)
+class ProfileView(DetailView):
+    model = CustomUser
+    template_name='app2/profile.html'
+    context_object_name = 'object'
+
+    def get_object(self):
+        object = super(ProfileView, self).get_object()
+        return object
 
 
-class RegistrationView(View):
+class RegistrationView(FormView):
+    template_name = 'app2/registration.html'
+    form_class = RegistrationForm
+    success_url = reverse_lazy('app2_nms1:register')
+
+    market_title = ''
+    reg_complete_msg = ''
+
+    @classmethod
+    def init_class_vars(cls):
+        cls.market_title = 'New account registration page'
+        cls.reg_complete_msg = ''
+
     def _send_email(self, user):
-        content = "127.0.0.1:8080/app2/confirm/" + str(user.confirmation_code) + "/" + user.username
+        content = reverse("app2_nms1:confirm", kwargs={'confirmation_code' : user.confirmation_code, 'username' : user.username })
+        #content = "127.0.0.1:8080/app2/confirm/" + str(user.confirmation_code) + "/" + user.username
         send_mail("Account confirmation", content, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
-
 
     def _create_new_user(self, username, last_name, email, password):
         # https://docs.djangoproject.com/en/dev/topics/auth/default/
-        user = CustomUser.objects.create_user(username, email, password)
-        user.last_name = last_name
-        user.is_active = False
-        user.confirmation_code = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(33))
-        user.save()
+        extra_fields = { 'last_name' : last_name, 'is_active' : False, 'confirmation_code' : str(uuid.uuid4()) }
+        user = CustomUser.objects.create_user(username, email, password, **extra_fields)
         return user
 
-    def get(self, request):
-        context = Context({ 'market_title' : 'New account registration page', 'form' : RegistrationForm })
-        return render(request, 'app2/registration.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(RegistrationView, self).get_context_data(**kwargs)
+        context['market_title'] = self.__class__.market_title
+        context['reg_complete_msg'] = self.__class__.reg_complete_msg
+        self.__class__.init_class_vars()
+        return context
 
-    def post(self, request):
-        context = Context({})
-        form = RegistrationForm(data=request.POST)
-        
-        if form.is_valid():
-            user = self._create_new_user(form.cleaned_data['first_name'] , form.cleaned_data['last_name'], form.cleaned_data['email'], form.cleaned_data['password'])
-            self._send_email(user)
-            context = Context({ 'market_title' : 'Registration success!', 'reg_complete_msg' : 'Look your email for conformation letter!',  'form' : RegistrationForm })
-            return render(request, 'app2/registration.html', context)
+    def form_invalid(self, form):
+        return super(RegistrationView, self).form_invalid(form)
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        user = self._create_new_user(form.cleaned_data['first_name'] , form.cleaned_data['last_name'], form.cleaned_data['email'], form.cleaned_data['password'])
+        self._send_email(user)
+        self.__class__.market_title = 'Registration success!'
+        self.__class__.reg_complete_msg = 'Look your email for confirmation letter!'
+        return super(RegistrationView, self).form_invalid(form)
+
+
+class ConfirmationView(TemplateView):
+    template_name = "app2/confirmation.html"
+
+    def _check(self, *args, **kwargs):
+        self.err = ''
+        user = None
+        username = kwargs.get('username', '')
+        confirmation_code = kwargs.get('confirmation_code', '')
+
+        try:
+            user = CustomUser.objects.get(username=username)
+        except ObjectDoesNotExist:
+            self.err =  'User does not exists'
         else:
-            print form.errors.as_data()
-            context = Context({ 'form' : form })
-            return render(request, 'app2/registration.html', context)
+            if user.confirmation_code <> confirmation_code:
+                self.err = 'Confirmation code is invalid'
+            else:              
+                now = datetime.datetime.utcnow().replace(tzinfo=tz.gettz(user.timezone))
+
+                if user.date_joined <= (now - datetime.timedelta(days=1)):
+                    self.err = 'Time is expired'
+                else:
+                    user.is_active = True;
+                    user.save();
+
+    def get(self, request, *args, **kwargs):
+        self._check(self, *args, **kwargs)
+        if not self.err:
+            return redirect(reverse('app2_nms1:login'))
+        return super(ConfirmationView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ConfirmationView, self).get_context_data(*args, **kwargs)
+        context['error_msg'] = self.err
+        return context
 
 
+class LoginView(FormView):
+    template_name = 'app2/login.html'
+    form_class = LoginForm
+    success_url = reverse_lazy('app2_nms1:index')
 
-class ConfirmationView(View):
-    def get(self, request, confirmation_code, username):
-        user = CustomUser.objects.get(username=username)
-        tz = pytz.timezone(user.timezone)
+    market_title = ''
+    log_msg = ''
 
-        if user.confirmation_code == confirmation_code and user.date_joined > (datetime.datetime.now(tz) - datetime.timedelta(days=1)):
-            user.is_active = True
-            user.save()
-            #user.backend='django.contrib.auth.backends.ModelBackend' 
-        return redirect('LoginView.as_view()')
-        #return redirect(reverse(request.resolver_match.namespace + ':login_view', current_app = request.resolver_match.namespace))
+    @classmethod
+    def init_class_vars(cls):
+        cls.market_title = 'Welcome!'
+        cls.log_msg = ''
 
+    def get(self, request):
+        self.__class__.success_url = request.GET.get('next', reverse_lazy('app2_nms1:index'))
+        return super(LoginView, self).get(request)
 
-class LoginView(View):
     def post(self, request):
-        context = Context({})
         form = LoginForm(data=request.POST)
 
         if form.is_valid():
             if form.current_user.is_active:
                 login(request, form.current_user)
-                return redirect(reverse(request.resolver_match.namespace + ':index', current_app = request.resolver_match.namespace))
-            else:
-                context = Context({ 'market_title' : 'Your account is not confirmed yet!', 'reg_complete_msg' : 'Look your email for conformation letter!', 'form' : RegistrationForm })
-                return render(request, 'app2/registration.html', context)
-        else:
-            print form.errors.as_data()
-            context = Context({ 'form' : form, 'market_title' : 'Failed: ' + LoginForm.current_password })
-            return render(request, 'app2/login.html', context)
-        return render(request, 'app2/login.html', context)
+        return super(LoginView, self).post(request)
 
-    def get(self, request):
-        context = Context({ 'market_title' : 'Welcome', 'form' : LoginForm })
-        return render(request, 'app2/login.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        context['market_title'] = self.__class__.market_title
+        context['log_msg'] = self.__class__.log_msg
+        self.__class__.init_class_vars()
+        return context
+
+    def form_invalid(self, form):
+        kwargs = self.get_form_kwargs()
+        self.__class__.market_title = 'Login error'
+        self.__class__.log_msg = 'Error has been occured during login operation'
+        return super(LoginView, self).form_invalid(form)
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        if form.current_user.is_active == False:
+            self.__class__.market_title = 'Your account is not confirmed yet!'
+            self.__class__.log_msg = 'Look your email for conformation letter!'
+            return super(LoginView, self).form_invalid(form)
+        return super(LoginView, self).form_valid(form)
 
 
-class LogoutView(View):
+class LogoutView(RedirectView):
     def get(self, request):
         logout(request)
-        return redirect(reverse(request.resolver_match.namespace + ':login_view', current_app = request.resolver_match.namespace))
+        return super(LogoutView, self).get(request)
+
+    def get_redirect_url(self):
+        return reverse('app2_nms1:login')
 
 
 class ItemListView(ListView):
@@ -136,7 +194,6 @@ class ItemListView(ListView):
     context_object_name = 'latest_list'
     template_name = 'app2/item_list.html'
 
-    #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(ItemListView, self).dispatch(request, *args, **kwargs)
 

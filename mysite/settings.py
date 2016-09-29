@@ -31,15 +31,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'tastypie',
     'django_crontab',
     'app1.apps.App1Config',
     'app2.apps.App2Config',
-    'django.contrib.admin',
+    'grappelli',
+    #'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -103,11 +106,11 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTHENTICATION_BACKENDS = (
-    'app2.auth_backends.CustomUserModelBackend',
+    #'app2.auth_backends.CustomUserModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-CUSTOM_USER_MODEL = 'app2.models.NewCustomUser'
+AUTH_USER_MODEL = 'app2.CustomUser'
 
 
 AUTH_PASSWORD_VALIDATORS = [

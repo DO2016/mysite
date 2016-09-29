@@ -22,10 +22,11 @@ from django.contrib.staticfiles import views
 urlpatterns = [
     url(r'^app1/', include('app1.urls', namespace='app1_nms1')),
     url(r'^app2/', include('app2.urls', namespace='app2_nms1')),
-    #url(r'^app1/', include('app1.urls', app_name='app1', namespace='app1_nms1')),
-    #url(r'^app2/', include('app1.urls', app_name='app1', namespace='app1_nms2')),
-    #url(r'^app3/', include('app1.urls', app_name='app1', namespace='app1_nms3')),
+    url(r'^app1/', include('app1.urls', app_name='app1', namespace='app1_nms1')),
+    url(r'^app2/', include('app1.urls', app_name='app1', namespace='app1_nms2')),
+    url(r'^app3/', include('app1.urls', app_name='app1', namespace='app1_nms3')),
     url(r'^admin/', admin.site.urls),
+    url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
 ]
 
 if settings.DEBUG:

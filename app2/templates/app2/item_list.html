@@ -6,15 +6,11 @@
     <ul>
     {% for some_item in latest_list %}
 
-        {% with request.resolver_match.namespace|add:':detail_template' as path %}
-            {% url path  as resolved_url %}
-            {% with some_item.pk|stringformat:"s" as pk_str %}
-                {% with resolved_url|add:pk_str as url_ref %}
+        {% with request.resolver_match.namespace|add:':details' as path %}
+            {% url path some_item.pk|stringformat:"s" as resolved_url %}
+                
+                    <li><a href="{{ resolved_url }}">{{ some_item.name }}</a></li>
 
-                    <li><a href="{{ url_ref }}">{{ some_item.name }}</a></li>
-
-                {% endwith %}
-            {% endwith %}
         {% endwith %}
 
     {% endfor %}

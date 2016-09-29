@@ -3,7 +3,8 @@
 {% block page %}
 
        <h4> Profile view </h4>
-       <p> User number {{ user_pk }} is {{ user_name }} </p>
-       <p> His e-mail is  {{ user_email }} </p>
+       <p> User number {{ object.pk }} is {{ object.username }} </p>
+       <p> His e-mail is  {{ object.email }} </p>
+       <p> His timezone is  {{ object.timezone }} </p>
 
 {% endblock %}

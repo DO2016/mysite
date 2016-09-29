@@ -2,7 +2,11 @@
 
 {% block page %}
 
-    <h4> {{ market_title }} </h4>
+    <h4> {% if market_title %}
+    {{ market_title }} 
+    {% else  %}
+    New account registration page
+    {% endif %} </h4>
 
     {% if form.errors %}
         {% for field in form %}
@@ -26,7 +30,7 @@
     
     {% else %}
 
-        {% with request.resolver_match.namespace|add:':registration_view' as url_reg_view %}
+        {% with request.resolver_match.namespace|add:':register' as url_reg_view %}
         <form name="form_registration" method="post" action={% url url_reg_view %}> {% csrf_token %}
         {% endwith %}
 
