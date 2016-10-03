@@ -19,14 +19,21 @@ from django.contrib import admin
 from django.conf import settings
 from django.contrib.staticfiles import views
 
+from tastypie.api import Api
+from showcase.api import ProductResource, IngredientResource, CustomUserResource
+
+v1_api = Api(api_name='v1')
+v1_api.register(ProductResource())
+v1_api.register(IngredientResource())
+v1_api.register(CustomUserResource())
+
+
 urlpatterns = [
-    url(r'^app1/', include('app1.urls', namespace='app1_nms1')),
-    url(r'^app2/', include('app2.urls', namespace='app2_nms1')),
-    url(r'^app1/', include('app1.urls', app_name='app1', namespace='app1_nms1')),
-    url(r'^app2/', include('app1.urls', app_name='app1', namespace='app1_nms2')),
-    url(r'^app3/', include('app1.urls', app_name='app1', namespace='app1_nms3')),
+    url(r'^showcase/', include('showcase.urls', namespace='showcase')),
     url(r'^admin/', admin.site.urls),
     url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+    url(r'^api/', include(v1_api.urls)), # tastypie URLS
+
 ]
 
 if settings.DEBUG:

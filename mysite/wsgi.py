@@ -16,6 +16,11 @@ path = '/Users/dorlov/Projects/Test1/mysite'
 if path not in sys.path:
     sys.path.append(path)
 
+
+path = '/Users/dorlov/Projects/Test1/mysite/showcase'
+if path not in sys.path:
+    sys.path.append(path)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 
 application = get_wsgi_application()
