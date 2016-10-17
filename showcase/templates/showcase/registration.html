@@ -1,0 +1,38 @@
+{% extends "showcase/base.html" %}
+
+{% block page %}
+
+    <h4> {% if market_title %}
+    {{ market_title }} 
+    {% else  %}
+    New account registration page
+    {% endif %} </h4>
+
+    {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                {{ message }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+
+    {% if reg_complete_msg %}
+
+        {{ reg_complete_msg }}
+    
+    {% else %}
+
+        {% with request.resolver_match.namespace|add:':register' as url_reg_view %}
+        <form name="form_registration" method="post" action={% url url_reg_view %}> {% csrf_token %}
+        {% endwith %}
+
+            <table> {{ form.as_table }} </table>
+            <p><input type="submit"></p>
+        </form>
+
+    {% endif %}
+{% endblock %}

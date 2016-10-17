@@ -33,10 +33,9 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'tastypie',
     'django_crontab',
-    'app1.apps.App1Config',
-    'app2.apps.App2Config',
+    'showcase.apps.ShowcaseConfig',
     'grappelli',
-    #'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -53,10 +52,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # Now we add here our custom middleware
-    #'app1.middleware.simple.SimpleMiddleware',
-    'app1.simple.SimpleMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -72,7 +67,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'app1.context_processors.say_hello'
             ],
         },
     },
@@ -106,11 +100,11 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTHENTICATION_BACKENDS = (
-    #'app2.auth_backends.CustomUserModelBackend',
+    #'showcase.auth_backends.CustomUserModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-AUTH_USER_MODEL = 'app2.CustomUser'
+AUTH_USER_MODEL = 'showcase.CustomUser'
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -142,10 +136,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-CRONJOBS = [
-    ('*/5 * * * *', 'app2.cron.my_scheduled_job')
-]
+# Minimal length os user password
+USER_PSW_MIN_LENGTH = 3
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
@@ -158,8 +150,7 @@ STATICFILES_FINDERS = [
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "app1/static"), 
-    os.path.join(BASE_DIR, "app2/static"), 
+    os.path.join(BASE_DIR, "showcase/static"), 
 )
 
 # Media files

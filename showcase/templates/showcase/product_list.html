@@ -1,0 +1,36 @@
+{% extends "showcase/base.html" %}
+
+{% block page %}
+
+<h4> {% if market_title %}
+    {{ market_title }} 
+    {% else  %}
+    Welcome!
+    {% endif %} </h4>
+
+{% if product_list %}
+    <div class='left'>
+        <ul>
+            {% for some_item in product_list %}
+                {% with request.resolver_match.namespace|add:':details' as path %}
+                    {% url path some_item.pk|stringformat:"s" as resolved_url %}
+
+                        <li><a href="{{ resolved_url }}">{{ some_item.name }}</a>
+
+                    {% endwith %}
+                    <ul>
+                        {% for review in some_item.reviews.all %}
+                             <li>{{ review }}</li>
+                        {% endfor %}
+                    </ul>
+                    Total price : {{ some_item.sum_ings_price }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% else %}
+    <p>No items are available.</p>
+{% endif %}
+
+{% endblock %}
