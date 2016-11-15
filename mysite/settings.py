@@ -31,9 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'tastypie',
-    'django_crontab',
-    'showcase.apps.ShowcaseConfig',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,7 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework_swagger',
+
+    'tastypie',
+    'tastypie_swagger',
+    'django_crontab',
+
+    'showcase'
 ]
 
 MIDDLEWARE = [
@@ -122,6 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+TASTYPIE_SWAGGER_API_MODULE = 'mysite.urls.v1_api'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

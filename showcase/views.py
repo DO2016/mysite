@@ -3,6 +3,7 @@ import random
 import string
 import datetime
 from dateutil import tz
+
 from django.db import models
 from django.views import View
 from django.conf import settings
@@ -17,24 +18,29 @@ from django.views.generic import TemplateView
 from django.template import Context, Template
 from django.http import HttpResponseBadRequest
 from django.views.generic.list import ListView
-from .forms import RegistrationForm, LoginForm
 from django.views.generic.edit import FormView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.contrib.auth import authenticate, login
-from .models import Product, Ingredient, CustomUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy, resolve
 
+from .forms import RegistrationForm, LoginForm
+from .models import Product, Ingredient, CustomUser, Order
+
 
 # Create your views here.
 
-class IndexView(RedirectView):
-    def get_redirect_url(self):
-        return reverse('showcase:products')
+#class IndexView(RedirectView):
+#    def get_redirect_url(self):
+#        return reverse('showcase:products')
+
+
+class IndexView(TemplateView):
+    template_name = 'showcase/base.html'
 
 
 class ProfileView(DetailView):
@@ -49,7 +55,8 @@ class RegistrationView(FormView):
     success_url = reverse_lazy('showcase:register')
 
     def _send_email(self, user):
-        content = self.absolute_uri + reverse("showcase:confirm", kwargs={'confirmation_code' : user.confirmation_code, 'username' : user.username })
+        root_path = self.absolute_uri.split("/showcase", 1)
+        content = root_path[0] + reverse("showcase:confirm", kwargs={'confirmation_code' : user.confirmation_code, 'username' : user.username})
         send_mail("Account confirmation", content, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
 
     def _create_new_user(self, username, last_name, email, password):
@@ -154,7 +161,7 @@ class ProductDetail(DetailView):
 
 class ProductListView(ListView):
     model = Product
-    paginate_by = 10
+    paginate_by = 2
     context_object_name = 'product_list'
     template_name = 'showcase/product_list.html'
 

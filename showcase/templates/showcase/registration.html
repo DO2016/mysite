@@ -21,16 +21,20 @@
 
 
     {% if reg_complete_msg %}
-
-        {{ reg_complete_msg }}
-    
+        {{ reg_complete_msg }}  
     {% else %}
-
         {% with request.resolver_match.namespace|add:':register' as url_reg_view %}
         <form name="form_registration" method="post" action={% url url_reg_view %}> {% csrf_token %}
         {% endwith %}
-
-            <table> {{ form.as_table }} </table>
+            {% for field in form %}
+                <fieldset class="control-group">
+                <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                    <div class="controls">
+                        {{ field }}
+                        <p class="help-text">{{ field.help_text }} </p>
+                    </div>
+                </fieldset>
+            {% endfor %}
             <p><input type="submit"></p>
         </form>
 

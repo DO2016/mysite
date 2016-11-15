@@ -1,19 +1,18 @@
-from django.test import TestCase
-
-# Create your tests here.
 import json
 import uuid
 import random
 import string
-from .forms import *
-from django.test import Client
+
 from django.shortcuts import redirect
-from .models import CustomUser, Item, Currency
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, Client
 from django.core.urlresolvers import reverse, reverse_lazy, resolve
 from django.contrib.auth.models import AnonymousUser, User
 
+from .forms import *
+from .models import CustomUser, Product, Currency
+
 #from .views import registration_view
+
 
 class SimpleTest(TestCase):
 
@@ -24,7 +23,6 @@ class SimpleTest(TestCase):
         self.user.confirmation_code = str(uuid.uuid4())
         self.user.save()
         self.c = Client()
-
 
     def test_a_register(self):
         new_username = self.user.username + '123'
@@ -41,14 +39,12 @@ class SimpleTest(TestCase):
         user = CustomUser.objects.get(username=new_username)
         self.assertTrue(user is not None and user.is_active)
 
-
     def test_b_profile(self):
         user = CustomUser.objects.get(username=self.user.username)
         url = reverse_lazy("showcase:profile", kwargs={ 'pk' : str(user.pk) })
         response = self.c.get(url, {})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(user.username in response.content)
-
   
     def test_c_login(self):
         url = reverse_lazy("showcase:confirm", kwargs={ 'confirmation_code' : self.user.confirmation_code, 'username' : self.user.username })
@@ -56,26 +52,24 @@ class SimpleTest(TestCase):
         self.assertEqual(response.status_code, 302)
         response = self.c.post(reverse_lazy("showcase:login"), { 'username': self.user.username, 'password' : self.plain_password, })
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response['Location'].endswith('/app2/'))
-
+        self.assertTrue(response['Location'].endswith('/showcase/'))
 
     def test_d_logout(self):
         response = self.c.get(reverse_lazy("showcase:logout"), {})
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response['Location'].endswith, '/app2/login')
+        self.assertTrue(response['Location'].endswith, '/showcase/login')
 
 
     def test_e_itemlist(self):
-        response = self.c.get(reverse_lazy("showcase:item_list"), {})
+        response = self.c.get(reverse_lazy("showcase:products"), {})
         self.assertEqual(response.status_code, 302)
-
 
     def test_f_details(self):
         iname = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for x in range(10))
-        currency = Currency.objects.create(name='test_currency')
-        item = Item.objects.create(name=iname, content='test', currency=Currency.objects.get(pk=currency.pk))
+        currency = Currency.objects.create(name='test_currency', int_code=1, char_code='TMP')
+        item = Product.objects.create(name=iname, description='test', currency=Currency.objects.get(pk=currency.pk))
 
         url = reverse_lazy("showcase:details", kwargs={ 'pk' : str(item.pk) })
         response = self.c.get(url, {})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 

@@ -1,13 +1,4 @@
-{% extends "showcase/base.html" %}
-
-{% block page %}
-
-<h4> {% if market_title %}
-    {{ market_title }} 
-    {% else  %}
-    Welcome to 'Showcase' application!
-    {% endif %} </h4>
-
+<script type="text/template" id="products_template">
 {% if product_list %}
     <div class="navbar navbar-inverse navbar-fixed-top" class="upper">
         <div class="navbar-inner">
@@ -61,9 +52,7 @@
     </ul>
 {% endif %}
 
-
 {% else %}
     <p>No items are available.</p>
 {% endif %}
-
-{% endblock %}
+</script>
