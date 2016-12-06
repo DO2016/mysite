@@ -19,8 +19,14 @@
     <body>
       {% include "showcase/login_template.html" %}
       {% include "showcase/products_template.html" %}
+      {% include "showcase/header_template.html" %}
+      {% include "showcase/generation_template.html" %}
+      {% include "showcase/signup_template.html" %}
+      {% include "showcase/details_template.html" %}
 
-      <div id="content"> ** Default content ** </div>
+      <div id="header_content"> ** Header content ** </div>
+      <br><br><br>
+      <div id="content" class="container"> ** Default content ** </div>
 
       <script src="{% static '/showcase/js/jquery-3.1.1.js' %}"></script> 
       <script src="{% static '/showcase/js/jquery.cookie.js' %}"></script> 
@@ -32,6 +38,10 @@
       <script src="{% static '/showcase/mvc/views/HeaderView.js' %}"></script>
       <script src="{% static '/showcase/mvc/views/LoginView.js' %}"></script>
       <script src="{% static '/showcase/mvc/views/ProductListView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/HeaderView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/GenerateSalesView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/SignupView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/DetailsView.js' %}"></script>
       <script src="{% static '/showcase/mvc/routers.js' %}"></script>
       <script src="{% static '/showcase/js/script.js' %}"></script>
 

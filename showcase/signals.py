@@ -1,6 +1,8 @@
 from tastypie.models import ApiKey
 
+from django.db.models.signals import post_save
 from django.dispatch.dispatcher import Signal
+from django.dispatch import receiver
 
 from .models import CustomUser
 
@@ -13,8 +15,8 @@ from .models import CustomUser
 def post_save_handler(sender, **kwargs):
     if isinstance(kwargs['instance'], CustomUser) and kwargs['created']:
         user = kwargs['instance']
-        ApiKey.objects.create(user=user)
 
-        if not user.password.startswith('pbkdf2_sha256$'):
+        if not user.password.startswith('pbkdf2_sha256$'):        
+            ApiKey.objects.create(user=user)
             user.set_password(user.password)
             user.save()

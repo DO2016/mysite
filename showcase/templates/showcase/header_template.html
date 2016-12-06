@@ -1,0 +1,44 @@
+<script type="text/template" id="header_template">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+
+
+                <ol class="breadcrumb">
+                    <% _.each(breadcrumbs, function(breadcrumb) { %>
+                       <li>
+                            <%= breadcrumb %>
+                       </li>
+                    <% }); %>
+                </ol>
+ 
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#signup" id="signupHref"> <span class="glyphicon glyphicon-registration-mark"></span> Register new account </a>
+                    </li>
+
+                    <li>
+                        <a href="#products" id="productsHref"> <span class="glyphicon glyphicon-th"></span> Products </a>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a float="right" id="logoutButton"> <span class="glyphicon glyphicon-log-out"></span> Log out </a>
+                    </li>
+
+                    <li>
+                        <a href="#login" id="loginButton"><span class="glyphicon glyphicon-log-in"></span> Log In </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </nav>
+    <div class="clearfix"></div>
+</script>

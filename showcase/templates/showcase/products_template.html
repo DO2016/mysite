@@ -1,58 +1,77 @@
 <script type="text/template" id="products_template">
-{% if product_list %}
-    <div class="navbar navbar-inverse navbar-fixed-top" class="upper">
-        <div class="navbar-inner">
-            <div class="">
-                <div class="header">List of products:</div>
-                <ul class="nav">
-                </ul>
+
+<div class="panel panel-default">
+<div class="panel-body">
+    <!-- -->
+    <% _.each(product_list, function(some_item) { %>
+
+            <div class="col-sm-4 col-lg-4 col-md-4">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <h4 class="pull-right"><%= some_item.price %></h4>
+                        <h4> <a href ="#details/<%= some_item.id %>"> <%= some_item.name %></a>
+                        </h4>
+                        <p>Description: <%= some_item.description %></p>
+                    </div>
+                    <div class="ratings">
+                        <p class="pull-right"><%= some_item.reviews.length %> reviews</p>
+                        <p>
+                            <% for (var i = 1; i <= some_item.reviews.length; i++) { %>
+                                <span class="glyphicon glyphicon-star"></span>
+                            <% }; %>
+
+                            <% for (var i = 1; i <= 5 - some_item.reviews.length; i++) { %>
+                                <span class="glyphicon glyphicon-star-empty"></span>
+                            <% }; %>
+                        </p>
+                    </div>
+                </div>
             </div>
+    <% }); %>
+</div>
+
+<div class="panel-footer">
+    <!-- Trigger the modal with a button -->
+    <div class="pull-right">
+    <button type="button" visible="false" id="newProductButton" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">
+        <span class="glyphicon glyphicon-plus"></span> Add new product
+    </button>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+</div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add new product</h4>
+            </div>
+
+            <div class="modal-body">
+                <label class="control-label" for="name">Product name</label>
+                <div class="controls">
+                    <input type="text" id="name" placeholder="name">
+                </div>
+
+                <label class="control-label" for="price">Product price</label>
+                <div class="controls">
+                    <input type="text" id="мprice" placeholder="price">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="addButton">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+
+          </div>
         </div>
     </div>
-
-    <div class='table table-bordered'>
-        <ul>
-            {% for some_item in product_list %}
-                {% with request.resolver_match.namespace|add:':details' as path %}
-                    {% url path some_item.pk|stringformat:"s" as resolved_url %}
-                    <li><a href="{{ resolved_url }}">{{ some_item.name }}</a>
-                {% endwith %}
-                        <ul>
-                        {% for review in some_item.reviews.all %}
-                             <li>{{ review }}</li>
-                        {% endfor %}
-                        </ul>
-                        Product price: {{ some_item.price }}
-                        <br>
-                        All ingredients price : {{ some_item.sum_ings_price }}
-                    </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-{% if product_list.page_obj.has_other_pages %}
-    <ul class="pagination">
-        {% if product_list.page_obj.has_previous %}
-          <li><a href="?page={{ product_list.page_obj.previous_page_number }}">&laquo;</a></li>
-        {% else %}
-          <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in product_list.paginator.page_range %}
-          {% if product_list.number == i %}
-            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-          {% else %}
-            <li><a href="?page={{ i }}">{{ i }}</a></li>
-          {% endif %}
-        {% endfor %}
-        {% if product_list.has_next %}
-          <li><a href="?page={{ product_list.page_obj.next_page_number }}">&raquo;</a></li>
-        {% else %}
-          <li class="disabled"><span>&raquo;</span></li>
-        {% endif %}
-    </ul>
-{% endif %}
-
-{% else %}
-    <p>No items are available.</p>
-{% endif %}
 </script>

@@ -32,6 +32,9 @@ urlpatterns = [
     url(r'^api/', include(v1_api.urls)), # tastypie URLS
 ]
 
+urlpatterns += [
+    url(r'^django-rq/', include('django_rq.urls')),
+]
 
 if settings.DEBUG:
     urlpatterns += [
