@@ -19,7 +19,7 @@ var GenerateSalesModel = Backbone.Model.extend({
 });
 
 var ProductModel = Backbone.Model.extend({
-    url: '/api/v1/ProductResource/'
+    urlRoot: '/api/v1/ProductResource/'
     , name: 'name'
     , description: 'description'
     , is_published: 'is_published'

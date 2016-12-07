@@ -90,7 +90,7 @@ class CurrencyResource(ModelResource):
 
 class ProductResource(BackboneCompatibleResource):
     reviews = fields.ToManyField('showcase.api.ReviewResource', 'reviews', related_name='product', blank=True, null=True, full=True)
-    currency = fields.ForeignKey(CurrencyResource, 'currency')
+    currency = fields.ForeignKey(CurrencyResource, 'currency', full=True)
     allowed_methods_list = ['get']
     #sum_ings_price = fields.DecimalField(readonly=True)
 

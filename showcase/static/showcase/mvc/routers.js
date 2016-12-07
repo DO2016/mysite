@@ -10,7 +10,7 @@ window.AppRouter = Backbone.Router.extend({
     },
 
     routes: {
-        "" : "index",
+        "" : "products",
         "login" : "login",
         "products" : "products",
         "details/:id" : "productDetails",
@@ -20,23 +20,16 @@ window.AppRouter = Backbone.Router.extend({
         "signup": "signup"
     },
 
-    index: function() {
-        this.breadcrumbs = [ "<a href=\"#\">Bristol</a>" ];
-        this.breadcrumbs.push("<a href=\"#products\"> <span class=\"glyphicon glyphicon-th\"></span> Products </a>");
-        this.headerView.render(this.breadcrumbs);
-        this.show(this.productListView);
-    },
-
     products: function() {
         this.breadcrumbs = [ "<a href=\"#\">Bristol</a>" ];
-        this.breadcrumbs.push("<a href=\"#products\">Products </a>");
+        this.breadcrumbs.push("<a href=\"#products\">Products</a>");
         this.headerView.render(this.breadcrumbs);
         this.show(this.productListView);
     },
 
     login: function() {
         this.breadcrumbs = [];
-        this.breadcrumbs.push("<a href=\"#login\">Log In </a>");
+        this.breadcrumbs.push("<a href=\"#login\">Log In</a>");
         this.headerView.render(this.breadcrumbs);
         this.show(this.loginView);
     },
@@ -48,14 +41,14 @@ window.AppRouter = Backbone.Router.extend({
 
     signup: function() {
         this.breadcrumbs = [ "<a href=\"#\">Bristol</a>" ];
-        this.breadcrumbs.push("<a href=\"#signup\"> Register new account </a>");
+        this.breadcrumbs.push("<a href=\"#signup\"> Register new account</a>");
         this.headerView.render(this.breadcrumbs);
         this.show(this.signupView);
     },
 
     productDetails: function(id) {
         this.breadcrumbs = [ "<a href=\"#\">Bristol</a>" ];
-        this.breadcrumbs.push("<a href=\"#products\">Products </a>");
+        this.breadcrumbs.push("<a href=\"#products\">Products</a>");
         this.detailsView.render(id, this.breadcrumbs, this.headerView);
     },
 

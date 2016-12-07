@@ -8,7 +8,7 @@
             <div class="col-sm-4 col-lg-4 col-md-4">
                 <div class="thumbnail">
                     <div class="caption">
-                        <h4 class="pull-right"><%= some_item.price %></h4>
+                        <h4 class="pull-right"><%= some_item.price %> <%= some_item.currency.char_code %></h4>
                         <h4> <a href ="#details/<%= some_item.id %>"> <%= some_item.name %></a>
                         </h4>
                         <p>Description: <%= some_item.description %></p>
@@ -62,7 +62,7 @@
 
                 <label class="control-label" for="price">Product price</label>
                 <div class="controls">
-                    <input type="text" id="мprice" placeholder="price">
+                    <input type="text" id="price" placeholder="price">
                 </div>
             </div>
 
