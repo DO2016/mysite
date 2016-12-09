@@ -43,7 +43,7 @@ class ConfirmationResource(BackboneCompatibleResource):
             return qs
 
     class Meta(BackboneCompatibleResource.Meta):
-        queryset = CustomUser.objects.all()
+        queryset = CustomUser.objects.filter(is_active=False).select_related()
         allowed_methods_list = ['get', 'post']
         resource_name = 'ConfirmationResource'
 

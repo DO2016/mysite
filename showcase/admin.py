@@ -16,7 +16,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'is_published', 'date_published', 'price', 'currency', 'get_ings')
 
     def get_ings(self, obj):
-        return "\n".join([i.name for i in obj.ings.all()])
+        return "\n".join(list(obj.ings.all().values_list('name'), flat=True)) 
 
 
 @admin.register(Review)
@@ -39,7 +39,7 @@ class IngredientAdmin(admin.ModelAdmin):
     form = IngredientAdminForm
 
     def get_products(self, obj):
-        return "\n".join([p.name for p in obj.products.all()])
+        return "\n".join(list(obj.products.all().values_list('name'), flat=True)) 
 
 
 @admin.register(Composition)

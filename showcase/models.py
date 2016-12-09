@@ -29,9 +29,7 @@ class ProductManager(models.Manager):
 class OrderManager(models.Manager):
     def _validate(self, date_text):
         try:
-            if date_text != datetime.strptime(date_text, "%Y-%m-%d").strftime('%Y-%m-%d'):
-                raise ValueError
-            return True
+            return date_text != datetime.strptime(date_text, "%Y-%m-%d").strftime('%Y-%m-%d')
         except ValueError:
             return False
 
