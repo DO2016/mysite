@@ -1,0 +1,28 @@
+<script type="text/template" id="details_template">
+
+<div class="panel-group">
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">Product name</div>
+      <div class="panel-body"><%= some_item.name %></div>
+    </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">Description</div>
+      <div class="panel-body"><%= some_item.description %></div>
+    </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">Price</div>
+      <div class="panel-body"><%= some_item.price %></div>
+    </div>
+
+    <% _.each(some_item.reviews, function(review) { %>
+        <div class="panel panel-primary">
+        <div class="panel-heading">Review </div>
+        <div class="panel-body"><%= review.content %></div>
+        </div>
+    <% }); %>
+
+</div>
+</script>

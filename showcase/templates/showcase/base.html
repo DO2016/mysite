@@ -10,20 +10,40 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
       <![endif]-->
       {% load static %}
+      <link rel="stylesheet" type="text/css" href="{% static '/showcase/css/bootstrap.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static '/showcase/css/bootstrap-theme.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static '/showcase/css/shop-homepage.css' %}">
       <link rel="stylesheet" type="text/css" href="{% static '/showcase/css/style.css' %}">
-      <script src="{% static '/showcase/js/script.js' %}"></script> 
     </head>
 
     <body>
-      
-      <img src="{% static "showcase/img/SN.png" %}" alt="My image"/>
+      {% include "showcase/login_template.html" %}
+      {% include "showcase/products_template.html" %}
+      {% include "showcase/header_template.html" %}
+      {% include "showcase/generation_template.html" %}
+      {% include "showcase/signup_template.html" %}
+      {% include "showcase/details_template.html" %}
 
-      {% block page %}
-          {% block content %}
-          {% endblock %}
-      {% endblock %}
+      <div id="header_content"> ** Header content ** </div>
+      <br><br><br>
+      <div id="content" class="container"> ** Default content ** </div>
 
-      <!-- <div class="flexible"></div> -->
+      <script src="{% static '/showcase/js/jquery-3.1.1.js' %}"></script> 
+      <script src="{% static '/showcase/js/jquery.cookie.js' %}"></script> 
+      <script src="{% static '/showcase/js/underscore.js' %}"></script> 
+      <script src="{% static '/showcase/js/backbone.js' %}"></script> 
+      <script src="{% static '/showcase/js/bootstrap.js' %}"></script>
+      <script src="{% static '/showcase/mvc/models.js' %}"></script> 
+      <script src="{% static '/showcase/mvc/collections.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/HeaderView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/LoginView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/ProductListView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/HeaderView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/GenerateSalesView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/SignupView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/views/DetailsView.js' %}"></script>
+      <script src="{% static '/showcase/mvc/routers.js' %}"></script>
+      <script src="{% static '/showcase/js/script.js' %}"></script>
 
     </body>
     </html>

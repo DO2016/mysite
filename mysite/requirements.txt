@@ -1,0 +1,8 @@
+django==1.10.2
+django-tastypie==0.13.3
+django-compressor==2.1
+
+# forked from django-tastypie-swagger and fixed for django 1.10.2
+https://github.com/vsdudakov/django-tastypie-swagger/archive/master.zip
+
+uwsgi==2.0.14

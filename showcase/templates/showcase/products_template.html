@@ -1,0 +1,77 @@
+<script type="text/template" id="products_template">
+
+<div class="panel panel-default">
+<div class="panel-body">
+    <!-- -->
+    <% _.each(product_list, function(some_item) { %>
+
+            <div class="col-sm-4 col-lg-4 col-md-4">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <h4 class="pull-right"><%= some_item.price %> <%= some_item.currency.char_code %></h4>
+                        <h4> <a href ="#details/<%= some_item.id %>"> <%= some_item.name %></a>
+                        </h4>
+                        <p>Description: <%= some_item.description %></p>
+                    </div>
+                    <div class="ratings">
+                        <p class="pull-right"><%= some_item.reviews.length %> reviews</p>
+                        <p>
+                            <% for (var i = 1; i <= some_item.reviews.length; i++) { %>
+                                <span class="glyphicon glyphicon-star"></span>
+                            <% }; %>
+
+                            <% for (var i = 1; i <= 5 - some_item.reviews.length; i++) { %>
+                                <span class="glyphicon glyphicon-star-empty"></span>
+                            <% }; %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+    <% }); %>
+</div>
+
+<div class="panel-footer">
+    <!-- Trigger the modal with a button -->
+    <div class="pull-right">
+    <button type="button" visible="false" id="newProductButton" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">
+        <span class="glyphicon glyphicon-plus"></span> Add new product
+    </button>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+</div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add new product</h4>
+            </div>
+
+            <div class="modal-body">
+                <label class="control-label" for="name">Product name</label>
+                <div class="controls">
+                    <input type="text" id="name" placeholder="name">
+                </div>
+
+                <label class="control-label" for="price">Product price</label>
+                <div class="controls">
+                    <input type="text" id="price" placeholder="price">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="addButton">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+
+          </div>
+        </div>
+    </div>
+</script>
